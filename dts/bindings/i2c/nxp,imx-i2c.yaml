@@ -3,7 +3,7 @@
 
 description: i.MX I2C node
 
-compatible: "fsl,imx7d-i2c"
+compatible: "nxp,imx-i2c"
 
 include: i2c-controller.yaml
 
