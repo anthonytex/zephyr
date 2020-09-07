@@ -31,6 +31,7 @@ struct imx_uart_config {
 #ifdef CONFIG_UART_INTERRUPT_DRIVEN
 	void (*irq_config_func)(const struct device *dev);
 #endif
+	bool rs485_mode;
 };
 
 struct imx_uart_data {
@@ -87,6 +88,10 @@ static int uart_imx_init(const struct device *dev)
 	/* Set UART modem mode */
 	UART_SetModemMode(uart, config->modem_mode);
 
+	if (config->rs485_mode) {
+        UART_SetCtsFlowCtrlCmd(uart, false);
+	}
+
 	/* Finally, enable the UART module */
 	UART_Enable(uart);
 
@@ -126,11 +131,8 @@ static int uart_imx_fifo_fill(const struct device *dev,
 	UART_Type *uart = UART_STRUCT(dev);
 	unsigned int num_tx = 0U;
 
-	while (((size - num_tx) > 0) &&
-		   UART_GetStatusFlag(uart, uartStatusTxReady)) {
-		/* Send a character */
+	for (; num_tx < 30 && (size - num_tx); num_tx++) {
 		UART_Putchar(uart, tx_data[num_tx]);
-		num_tx++;
 	}
 
 	return (int)num_tx;
@@ -158,6 +160,12 @@ static int uart_imx_fifo_read(const struct device *dev, uint8_t *rx_data,
 static void uart_imx_irq_tx_enable(const struct device *dev)
 {
 	UART_Type *uart = UART_STRUCT(dev);
+	const struct imx_uart_config *config = dev->config;
+
+	if (config->rs485_mode) {
+        UART_SetCtsPinLevel(uart, false);
+		UART_SetIntCmd(uart, uartIntTxComplete, true);
+	}
 
 	UART_SetIntCmd(uart, uartIntTxReady, true);
 }
@@ -176,9 +184,29 @@ static int uart_imx_irq_tx_ready(const struct device *dev)
 	return UART_GetStatusFlag(uart, uartStatusTxReady);
 }
 
+static int uart_imx_irq_tx_complete(const struct device *dev)
+{
+	UART_Type *uart = UART_STRUCT(dev);
+
+	int flag = UART_GetStatusFlag(uart, uartStatusTxComplete);
+	const struct imx_uart_config *config = dev->config;
+	if (flag) {
+		if (config->rs485_mode) {
+			UART_SetCtsPinLevel(uart, true);
+		}
+		UART_SetIntCmd(uart, uartIntTxComplete, false);
+	}
+	return flag;
+}
+
 static void uart_imx_irq_rx_enable(const struct device *dev)
 {
 	UART_Type *uart = UART_STRUCT(dev);
+	const struct imx_uart_config *config = dev->config;
+
+	if (config->rs485_mode) {
+        UART_SetCtsPinLevel(uart, true);
+	}
 
 	UART_SetIntCmd(uart, uartIntRxReady, true);
 }
@@ -186,6 +214,12 @@ static void uart_imx_irq_rx_enable(const struct device *dev)
 static void uart_imx_irq_rx_disable(const struct device *dev)
 {
 	UART_Type *uart = UART_STRUCT(dev);
+
+	const struct imx_uart_config *config = dev->config;
+
+	if (config->rs485_mode) {
+        UART_SetCtsPinLevel(uart, false);
+	}
 
 	UART_SetIntCmd(uart, uartIntRxReady, false);
 }
@@ -274,6 +308,7 @@ static const struct uart_driver_api uart_imx_driver_api = {
 	.irq_is_pending   = uart_imx_irq_is_pending,
 	.irq_update		  = uart_imx_irq_update,
 	.irq_callback_set = uart_imx_irq_callback_set,
+	.irq_tx_complete  = uart_imx_irq_tx_complete,
 #endif	/* CONFIG_UART_INTERRUPT_DRIVEN */
 
 };
@@ -282,7 +317,8 @@ static const struct uart_driver_api uart_imx_driver_api = {
 	static const struct imx_uart_config imx_uart_##n##_config = {	\
 		.base = (UART_Type *) DT_INST_REG_ADDR(n),		\
 		.baud_rate = DT_INST_PROP(n, current_speed),		\
-		.modem_mode = DT_INST_PROP(n, modem_mode),		\
+		.modem_mode = DT_INST_PROP(n, modem_mode),      \
+        .rs485_mode = DT_INST_PROP(n, rs485_enabled_at_boot_time), \
 		IRQ_FUNC_INIT						\
 	}
 
