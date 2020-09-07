@@ -23,3 +23,8 @@ properties:
      type: int
      required: true
      description: Set the RDC permission for this peripheral
+
+    rs485-enabled-at-boot-time:
+      type: boolean
+      required: false
+      description: Enable Rs485 mode driven by CTS pin
