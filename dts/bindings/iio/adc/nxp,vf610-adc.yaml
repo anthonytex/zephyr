@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: Apache-2.0
+
+description: Vf610 Adc
+
+compatible: "nxp,vf610-adc"
+
+include: adc-controller.yaml
+
+properties:
+    reg:
+      required: true
+
+    interrupts:
+      required: true
+
+    "#io-channel-cells":
+      const: 1
+
+    rdc:
+      type: int
+      required: true
+      description: Set the RDC permission for this peripheral
+
+io-channel-cells:
+    - input

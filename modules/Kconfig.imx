@@ -20,6 +20,11 @@ config HAS_IMX_I2C
 	help
 	  Set if the I2C module is present in the SoC.
 
+config HAS_VF610_ADC
+	bool
+	help
+	  Set if the ADC module is present in the SoC.
+
 config HAS_IMX_EPIT
 	bool
 	help

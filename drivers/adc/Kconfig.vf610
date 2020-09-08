@@ -1,0 +1,46 @@
+# ADC configuration options
+
+# SPDX-License-Identifier: Apache-2.0
+
+config ADC_VF610
+	bool "VF610 ADC driver"
+	depends on HAS_VF610_ADC
+	help
+	  Enable the VF610 ADC driver.
+
+if ADC_VF610
+
+choice
+	prompt "Clock Source Select"
+	default ADC_VF610_CLK_IPG_DIV_2
+
+config ADC_VF610_CLK_IPG
+	bool "Clock source from IPG"
+
+config ADC_VF610_CLK_IPG_DIV_2
+	bool "Clock source from IPG divided by 2"
+
+config ADC_VF610_CLK_ADACK
+	bool "Clock source from ADACK"
+
+endchoice
+
+choice
+	prompt "Clock Divide Selection"
+	default ADC_VF610_CLK_DIV_RATIO_4
+
+config ADC_VF610_CLK_DIV_RATIO_1
+	bool "Divide ratio is 1"
+
+config ADC_VF610_CLK_DIV_RATIO_2
+	bool "Divide ratio is 2"
+
+config ADC_VF610_CLK_DIV_RATIO_4
+	bool "Divide ratio is 4"
+
+config ADC_VF610_CLK_DIV_RATIO_8
+	bool "Divide ratio is 8"
+
+endchoice
+
+endif # ADC_VF610
