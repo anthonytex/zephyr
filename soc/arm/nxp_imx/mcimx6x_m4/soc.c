@@ -104,6 +104,15 @@ static void SOC_RdcInit(void)
 	/* Set access to I2C-4 for M4 core */
 	RDC_SetPdapAccess(RDC, rdcPdapI2c4, RDC_DT_VAL(i2c4), false, false);
 #endif
+
+#if DT_NODE_HAS_STATUS(DT_NODELABEL(adc1), okay)
+	/* Set access to ADC-1 for M4 core */
+	RDC_SetPdapAccess(RDC, rdcPdapAdc1, RDC_DT_VAL(i2c4), false, false);
+#endif
+#if DT_NODE_HAS_STATUS(DT_NODELABEL(adc2), okay)
+	/* Set access to ADC-2 for M4 core */
+	RDC_SetPdapAccess(RDC, rdcPdapAdc2, RDC_DT_VAL(i2c4), false, false);
+#endif
 }
 
 /* Initialize cache. */
@@ -177,7 +186,7 @@ static void SOC_ClockInit(void)
 #endif /* CONFIG_COUNTER_IMX_EPIT */
 
 #ifdef CONFIG_I2C_IMX
-	/* Select EPIT clock is derived from OSC (24M) */
+	/* Select I2C clock is derived from OSC (24M) */
 	CCM_SetRootMux(CCM, ccmRootPerclkClkSel, ccmRootmuxPerclkClkOsc24m);
 
 	/* Set relevant divider = 1. */
