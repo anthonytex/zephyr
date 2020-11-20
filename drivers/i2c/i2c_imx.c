@@ -187,7 +187,6 @@ static int i2c_imx_transfer(struct device *dev, struct i2c_msg *msgs,
 	I2C_Type *base = DEV_BASE(dev);
 	struct i2c_imx_data *data = DEV_DATA(dev);
 	struct i2c_master_transfer *transfer = &data->transfer;
-	u8_t *buf, *buf_end;
 	u16_t timeout = UINT16_MAX;
 	int result = -EIO;
 
@@ -229,13 +228,13 @@ static int i2c_imx_transfer(struct device *dev, struct i2c_msg *msgs,
 		}
 
 		/* Transfer data */
-		buf = msgs->buf;
-		buf_end = buf + msgs->len;
-		if ((msgs->flags & I2C_MSG_RW_MASK) == I2C_MSG_READ) {
-			i2c_imx_read(dev, msgs->buf, msgs->len);
-		} else {
-			if (!i2c_imx_write(dev, msgs->buf, msgs->len)) {
-				goto finish; /* No ACK received */
+		if (msgs->len) {
+			if ((msgs->flags & I2C_MSG_RW_MASK) == I2C_MSG_READ) {
+				i2c_imx_read(dev, msgs->buf, msgs->len);
+			} else {
+				if (!i2c_imx_write(dev, msgs->buf, msgs->len)) {
+					goto finish; /* No ACK received */
+				}
 			}
 		}
 
