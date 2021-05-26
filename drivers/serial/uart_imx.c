@@ -169,6 +169,7 @@ static void uart_imx_irq_tx_enable(const struct device *dev)
 
 	if (config->rs485_mode) {
         UART_SetCtsPinLevel(uart, false);
+		UART_SetIntCmd(uart, uartIntTxComplete, true);
 	}
 
 	UART_SetIntCmd(uart, uartIntTxReady, true);
@@ -177,11 +178,6 @@ static void uart_imx_irq_tx_enable(const struct device *dev)
 static void uart_imx_irq_tx_disable(const struct device *dev)
 {
 	UART_Type *uart = UART_STRUCT(dev);
-	const struct imx_uart_config *config = dev->config;
-
-	if (config->rs485_mode) {
-        UART_SetCtsPinLevel(uart, true);
-	}
 
 	UART_SetIntCmd(uart, uartIntTxReady, false);
 }
@@ -197,7 +193,15 @@ static int uart_imx_irq_tx_complete(const struct device *dev)
 {
 	UART_Type *uart = UART_STRUCT(dev);
 
-	return UART_GetStatusFlag(uart, uartStatusTxComplete);
+	int flag = UART_GetStatusFlag(uart, uartStatusTxComplete);
+	const struct imx_uart_config *config = dev->config;
+	if (flag) {
+		if (config->rs485_mode) {
+			UART_SetCtsPinLevel(uart, true);
+		}
+		UART_SetIntCmd(uart, uartIntTxComplete, false);
+	}
+	return flag;
 }
 
 static void uart_imx_irq_rx_enable(const struct device *dev)
