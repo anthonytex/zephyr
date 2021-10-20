@@ -1,9 +1,9 @@
 # Copyright (c) 2018, Diego Sueiro <diego.sueiro@gmail.com>
 # SPDX-License-Identifier: Apache-2.0
 
-description: i.MX7D PWM
+description: i.MX6SX and i.MX7D PWM
 
-compatible: "fsl,imx7d-pwm"
+compatible: "fsl,imx27-pwm"
 
 include: [pwm-controller.yaml, base.yaml]
 
