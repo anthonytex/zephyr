@@ -77,7 +77,7 @@ static int uart_imx_init(const struct device *dev)
 	UART_Init(uart, &initConfig);
 
 	/* Set UART build-in hardware FIFO Watermark. */
-	UART_SetTxFifoWatermark(uart, 31);
+	UART_SetTxFifoWatermark(uart, 2);
 	UART_SetRxFifoWatermark(uart, 1);
 
 	/* restore interrupt state */
@@ -133,11 +133,8 @@ static int uart_imx_fifo_fill(const struct device *dev,
 	UART_Type *uart = UART_STRUCT(dev);
 	unsigned int num_tx = 0U;
 
-	while (((size - num_tx) > 0) &&
-		   UART_GetStatusFlag(uart, uartStatusTxReady)) {
-		/* Send a character */
+	for (; num_tx < 30 && (size - num_tx); num_tx++) {
 		UART_Putchar(uart, tx_data[num_tx]);
-		num_tx++;
 	}
 
 	return (int)num_tx;
