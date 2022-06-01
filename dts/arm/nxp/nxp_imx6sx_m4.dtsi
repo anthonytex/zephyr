@@ -478,6 +478,30 @@
 			status = "disabled";
 			#io-channel-cells = <1>;
 		};
+
+		wdog1: wdog@420bc000 {
+        	compatible = "fsl,imx6sx-wdt", "fsl,imx21-wdt";
+        	reg = <0x420bc000 0x4000>;
+        	status = "disabled";
+        	interrupts = <80 0>;
+        	label = "WDOG1";
+      	};
+
+		wdog2: wdog@420c0000 {
+        	compatible = "fsl,imx6sx-wdt", "fsl,imx21-wdt";
+        	reg = <0x420c0000 0x4000>;
+        	status = "disabled";
+        	interrupts = <81 0>;
+        	label = "WDOG2";
+      	};
+
+		wdog3: wdog@42288000 {
+        	compatible = "fsl,imx6sx-wdt", "fsl,imx21-wdt";
+        	reg = <0x42288000 0x4000>;
+        	status = "disabled";
+        	interrupts = <11 0>;
+        	label = "WDOG3";
+      	};
 	};
 };
 

@@ -1,0 +1,26 @@
+# Watchdog configuration options
+
+# Copyright (c) 2022, Antonio Tessarolo
+# SPDX-License-Identifier: Apache-2.0
+
+config WDT_IMX
+	bool "IMX WDOG driver"
+	depends on HAS_IMX_WDT
+	help
+	  Enable the imx wdog driver.
+
+if WDT_IMX
+
+config WDT_IMX_RESET_PLATFORM
+    bool "Reset all platform"
+    default y
+    help
+        Reset all processor and not only the core who is running zephyr
+
+config WDT_IMX_INT_TIMEOUT
+    int "isr timeout milliseconds"
+    default 2000
+    help
+        Configure the timeout of the ISR that precede watchdog trigger
+
+endif # ADC_VF610

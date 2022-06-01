@@ -30,4 +30,9 @@ config HAS_IMX_EPIT
 	help
 	  Set if the EPIT module is present in the SoC.
 
+config HAS_IMX_WDT
+	bool
+	help
+	  Set if the WDT module is present in the SoC.
+
 endif # HAS_IMX_HAL

@@ -39,4 +39,8 @@ config PWM_IMX
 	default y
 	depends on PWM
 
+config WDT_IMX
+	default y
+	depends on WATCHDOG
+
 endif # SOC_MCIMX6X_M4

@@ -1,0 +1,18 @@
+# Copyright (c) 2022, Antonio Tessarolo
+# SPDX-License-Identifier: Apache-2.0
+
+description: IMX watchdog
+
+compatible: "fsl,imx21-wdt"
+
+include: base.yaml
+
+properties:
+    reg:
+      required: true
+
+    label:
+      required: true
+
+    interrupts:
+      required: true
